@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rishabh | Race Engineer & Developer</title>
+    <!-- Google Fonts for Racing Aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --f1-blue: #00d2ff;
+            --f1-blue-glow: rgba(0, 210, 255, 0.4);
+            --carbon-black: #0a0a0a;
+            --dark-gray: #1a1a1a;
+            --text-white: #f0f0f0;
+            --accent-gradient: linear-gradient(90deg, var(--f1-blue), #0072ff);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--carbon-black);
+            /* RE-INTEGRATED back.jpeg with a professional dark overlay */
+            background: linear-gradient(rgba(10, 10, 10, 0.8), rgba(6, 16, 33, 0.9)), 
+                        url('back.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-white);
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- BACKGROUND AMBIANCE --- */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Subtle scanline grid for that telemetry look */
+            background: linear-gradient(transparent 0%, rgba(0, 210, 255, 0.03) 50%, transparent 100%);
+            background-size: 100% 4px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- PORTFOLIO CARD --- */
+        .dashboard {
+            width: 95%;
+            max-width: 500px;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--f1-blue);
+            border-radius: 4px;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px var(--f1-blue-glow);
+            clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+        }
+
+        .dashboard::after {
+            content: "SYSTEM_ACTIVE_P1";
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            color: var(--f1-blue);
+            letter-spacing: 2px;
+            opacity: 0.6;
+        }
+
+        .profile-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 4px;
+            border: 2px solid var(--f1-blue);
+            object-fit: cover;
+            margin-bottom: 1rem;
+            padding: 5px;
+            background: var(--dark-gray);
+            transition: 0.3s;
+        }
+
+        .profile-pic:hover {
+            box-shadow: 0 0 15px var(--f1-blue);
+            transform: scale(1.02);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-style: italic;
+            margin-bottom: 0.2rem;
+        }
+
+        .rank {
+            font-size: 0.8rem;
+            color: var(--f1-blue);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .stat-box .label {
+            font-size: 0.6rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .stat-box .value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-white);
+        }
+
+        .discord-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--accent-gradient);
+            color: white;
+            text-decoration: none;
+            padding: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .discord-btn:hover {
+            letter-spacing: 1px;
+            box-shadow: 0 0 30px var(--f1-blue-glow);
+        }
+
+        .id-badge {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: #aaa;
+            text-align: center;
+        }
+
+        .id-badge span {
+            color: var(--f1-blue);
+            font-weight: bold;
+        }
+
+        /* --- MUSIC CONTROLLER --- */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-gray);
+            border: 1px solid var(--f1-blue);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 100;
+            transition: 0.3s;
+        }
+
+        .music-player:hover {
+            background: var(--f1-blue);
+            color: black;
+        }
+
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 15px;
+        }
+
+        .bar {
+            width: 3px;
+            background: currentColor;
+            height: 100%;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 100% { height: 30%; }
+            50% { height: 100%; }
+        }
+
+        .paused .bar {
+            animation-play-state: paused !important;
+            height: 20% !important;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 210, 255, 0.2);
+            position: absolute;
+            animation: scanline 4s linear infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <div class="dashboard">
+        <div class="scanline"></div>
+        
+        <div class="profile-container">
+            <img src="profile.jpeg" alt="Rishabh" class="profile-pic" onerror="this.src='https://via.placeholder.com/150/00d2ff/000000?text=R1'">
+            <h1>Rishabh</h1>
+            <span class="rank">Precision & Performance</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="label">Specialization</div>
+                <div class="value">Discord Bots</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Status</div>
+                <div class="value" style="color: #00ff00;">Available</div>
+            </div>
+            <div class="stat-box" style="grid-column: span 2;">
+                <div class="label">Telemetry Data</div>
+                <div class="value">High-Speed Automation Systems</div>
+            </div>
+        </div>
+
+        <a href="https://discord.com/users/1424942586937741312" class="discord-btn" target="_blank">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.248.595.05.05 0 0 0-.023.012.05.05 0 0 0-.011.058c.24.466.513.908.817 1.329a.05.05 0 0 0 .056.02 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+            </svg>
+            Initiate Contact
+        </a>
+
+        <div class="id-badge">
+            IDENT_ID: <span>rishabh_rishuu</span>
+        </div>
+    </div>
+
+    <!-- Music Player Controls - Starts as ON -->
+    <div class="music-player" id="musicToggle">
+        <div class="equalizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <span id="musicStatus">ENGINE ON</span>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop autoplay>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const musicToggle = document.getElementById('musicToggle');
+        const bgMusic = document.getElementById('bgMusic');
+        const statusText = document.getElementById('musicStatus');
+        let isPlaying = true;
+
+        // Function to attempt play
+        const attemptPlay = () => {
+            bgMusic.play().then(() => {
+                console.log("Audio started successfully.");
+                document.removeEventListener('click', attemptPlay);
+            }).catch(e => {
+                console.log("Autoplay prevented. Waiting for user interaction.");
+                musicToggle.classList.add('paused');
+                statusText.innerText = "ENGINE OFF";
+                isPlaying = false;
+            });
+        };
+
+        window.addEventListener('load', attemptPlay);
+        document.addEventListener('click', attemptPlay);
+
+        musicToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!isPlaying) {
+                bgMusic.play();
+                musicToggle.classList.remove('paused');
+                statusText.innerText = "ENGINE ON";
+                isPlaying = true;
+            } else {
+                bgMusic.pause();
+                musicToggle.classList.add('paused');
+                statusText.innerText = "ENGINE OFF";
+                isPlaying = false;
+            }
+        });
+
+        console.log("%c DRIVER STATUS: READY %c P1 ", 
+            "background: #000; color: #00d2ff; padding: 5px;", 
+            "background: #00d2ff; color: #000; font-weight: bold; padding: 5px;");
+    </script>
+</body>
+</html>
