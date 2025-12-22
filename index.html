@@ -25,7 +25,8 @@
 
         body {
             background-color: var(--carbon-black);
-            background: linear-gradient(rgba(10, 10, 10, 0.85), rgba(6, 16, 33, 0.95)), 
+            /* Reduced overlay opacity from 0.85/0.95 to 0.7/0.8 for better visibility */
+            background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(6, 16, 33, 0.8)), 
                         url('back.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: var(--text-white);
@@ -66,7 +67,7 @@
 
         /* --- STARTUP ANIMATIONS --- */
         @keyframes dashboardPop {
-            0% { opacity: 0; transform: scale(0.85) translateY(50px); filter: blur(10px); }
+            0% { opacity: 0; transform: scale(0.85) translateY(50px); filter: blur(5px); }
             100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
 
@@ -80,7 +81,9 @@
             width: 95%;
             max-width: 550px;
             background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
+            /* Reduced blur intensity from 20px to 8px */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--glass-border);
             border-top: 4px solid var(--f1-blue);
             border-radius: 4px;
