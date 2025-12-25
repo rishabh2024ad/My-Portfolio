@@ -8,41 +8,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #000; 
-            color: #fff; 
-            letter-spacing: -0.02em; 
-            margin: 0;
-            overflow-x: hidden;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; letter-spacing: -0.02em; margin: 0; overflow-x: hidden; }
         .mono { font-family: 'JetBrains Mono', monospace; }
         .glass { background: rgba(10, 10, 10, 0.9); border: 1px solid #1a1a1a; backdrop-filter: blur(12px); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; }
         .pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        #auth-overlay { background: radial-gradient(circle at center, #111 0%, #000 100%); transition: opacity 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- Auth Overlay -->
-    <div id="auth-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+    <div id="auth-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black">
         <div class="glass p-8 w-full max-w-md rounded-sm border-t-4 border-t-white shadow-2xl">
-            <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.4em] mb-2">Security Protocol</p>
             <h2 class="text-3xl font-black italic uppercase mb-8 tracking-tighter">CMD_ACCESS</h2>
-            
             <form id="login-form" class="space-y-4">
                 <input type="text" id="username" placeholder="OPERATOR ID" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono text-white focus:outline-none focus:border-white/40">
                 <input type="password" id="password" placeholder="ACCESS KEY" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono text-white focus:outline-none focus:border-white/40">
-                <div id="login-error" class="text-red-500 text-[10px] font-bold uppercase hidden text-center">Access Denied</div>
-                <button type="submit" class="w-full bg-white text-black font-black py-4 text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all mt-4">Initialize Link</button>
+                <button type="submit" class="w-full bg-white text-black font-black py-4 text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all mt-4 tracking-widest">Initialize Link</button>
             </form>
         </div>
     </div>
 
-    <!-- Main Dashboard -->
     <div id="main-content" class="max-w-7xl mx-auto p-6 md:p-12 hidden opacity-0 transition-opacity duration-1000">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-10 mb-10 gap-6">
             <div>
@@ -61,25 +48,25 @@
 
         <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Left Panel: Vitals & Radar -->
             <div class="lg:col-span-4 space-y-6">
                 <div class="glass p-6 rounded-sm">
                     <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Nearby Contacts</p>
-                    <div id="radar-list" class="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
-                        <p class="text-[10px] text-zinc-700 italic">No contacts in vicinity...</p>
-                    </div>
+                    <div id="radar-list" class="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar"></div>
                 </div>
 
                 <div class="glass p-6 rounded-sm">
                     <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Bot Vitals</p>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-[9px] text-zinc-500 mb-1">HEALTH</p>
-                            <p id="hp" class="text-4xl font-black italic">00</p>
+                            <p class="text-[9px] text-zinc-500 mb-1 font-black">TOTAL HP</p>
+                            <div class="flex items-baseline gap-2">
+                                <p id="hp" class="text-4xl font-black italic">00</p>
+                                <span id="abs-val" class="text-xs font-bold text-yellow-500 hidden"></span>
+                            </div>
                         </div>
                         <div>
-                            <p class="text-[9px] text-zinc-500 mb-1">HUNGER</p>
-                            <p id="fd" class="text-4xl font-black italic">00</p>
+                            <p class="text-[9px] text-zinc-500 mb-1 font-black">HUNGER</p>
+                            <p id="fd" class="text-4xl font-black italic text-white">00</p>
                         </div>
                     </div>
                 </div>
@@ -87,45 +74,44 @@
                 <div class="glass p-6 rounded-sm">
                     <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Spatial Telemetry</p>
                     <div class="grid grid-cols-3 gap-4">
-                        <div><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_X</p><p id="coord-x" class="mono text-xl font-bold tracking-tight">0.0</p></div>
-                        <div class="border-l border-white/5 pl-4"><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_Y</p><p id="coord-y" class="mono text-xl font-bold tracking-tight">0.0</p></div>
-                        <div class="border-l border-white/5 pl-4"><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_Z</p><p id="coord-z" class="mono text-xl font-bold tracking-tight">0.0</p></div>
+                        <div><p class="text-[9px] font-black text-zinc-700 uppercase mb-1">X</p><p id="coord-x" class="mono text-xl font-bold tracking-tight">0</p></div>
+                        <div><p class="text-[9px] font-black text-zinc-700 uppercase mb-1">Y</p><p id="coord-y" class="mono text-xl font-bold tracking-tight">0</p></div>
+                        <div><p class="text-[9px] font-black text-zinc-700 uppercase mb-1">Z</p><p id="coord-z" class="mono text-xl font-bold tracking-tight">0</p></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Center Panel: Chat & Console -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="glass h-[450px] flex flex-col rounded-sm">
-                    <div class="p-4 border-b border-white/5 bg-zinc-900/20 flex justify-between items-center">
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Tactical_Feed</span>
-                    </div>
                     <div id="chat" class="flex-1 overflow-y-auto p-6 space-y-2 custom-scrollbar mono text-[11px] text-zinc-400"></div>
-                    <div class="p-4 bg-black border-t border-white/5">
-                        <form id="cmd-form" class="flex gap-2">
-                            <input type="text" id="cmd-input" placeholder="Dispatch command..." class="flex-1 bg-zinc-900 border border-white/5 rounded-sm px-4 py-2 text-[11px] mono focus:outline-none focus:border-white/40">
-                            <button type="submit" class="bg-white text-black px-4 py-2 text-[10px] font-black uppercase">Send</button>
-                        </form>
+                    <div class="p-4 bg-black border-t border-white/5 flex gap-2">
+                        <input type="text" id="cmd-input" placeholder="Execute command..." class="flex-1 bg-zinc-900 border border-white/5 rounded-sm px-4 py-2 text-[11px] mono text-white focus:outline-none">
+                        <button onclick="sendRemote(document.getElementById('cmd-input').value); document.getElementById('cmd-input').value='';" class="bg-white text-black px-4 py-2 text-[10px] font-black uppercase">Send</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Panel: Inventory & Controls -->
             <div class="lg:col-span-3 space-y-6">
                 <div class="glass p-6 rounded-sm">
                     <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Live Inventory</p>
-                    <div id="inventory-list" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                        <div class="bg-zinc-900 p-2 border border-white/5 rounded-sm">
-                            <p class="text-[8px] text-zinc-600 mb-1">EMPTY</p>
-                        </div>
-                    </div>
+                    <div id="inventory-list" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2"></div>
                 </div>
 
                 <div class="glass p-6 bg-white text-black rounded-sm">
                     <p class="text-[10px] font-black uppercase tracking-widest mb-4 italic">Power Operations</p>
                     <div class="grid grid-cols-1 gap-2">
-                        <button onclick="sendRemote('#DISCONNECT')" class="w-full bg-black text-white p-3 text-[10px] font-black uppercase hover:bg-zinc-800 transition-all">STANDBY</button>
-                        <button onclick="sendRemote('#RECONNECT')" class="w-full border-2 border-black p-3 text-[10px] font-black uppercase hover:bg-black hover:text-white transition-all">REBOOT</button>
+                        <button onclick="sendRemote('#DISCONNECT')" class="w-full bg-black text-white p-3 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all">STANDBY</button>
+                        <button onclick="sendRemote('#RECONNECT')" class="w-full border-2 border-black p-3 text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">START / REBOOT</button>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-sm">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Tactical Directives</p>
+                    <div class="space-y-2">
+                        <button onclick="sendRemote('#EAT')" class="w-full bg-zinc-900 p-3 text-[10px] font-black uppercase text-left border border-white/5 hover:bg-white hover:text-black transition-all flex justify-between items-center">CONSUME RATIONS <i class="fa-solid fa-utensils"></i></button>
+                        <button onclick="sendRemote('/sethome main')" class="w-full bg-zinc-900 p-3 text-[10px] font-black uppercase text-left border border-white/5 hover:bg-white hover:text-black transition-all flex justify-between items-center">SET HOME <i class="fa-solid fa-house"></i></button>
+                        <button onclick="sendRemote('/home main')" class="w-full bg-zinc-900 p-3 text-[10px] font-black uppercase text-left border border-white/5 hover:bg-white hover:text-black transition-all flex justify-between items-center">GO HOME <i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="sendRemote(')kit pvp')" class="w-full bg-zinc-900 p-3 text-[10px] font-black uppercase text-left border border-white/5 hover:bg-white hover:text-black transition-all flex justify-between items-center">DISPATCH KIT <i class="fa-solid fa-box"></i></button>
                     </div>
                 </div>
             </div>
@@ -155,15 +141,11 @@
 
         document.getElementById('login-form').onsubmit = (e) => {
             e.preventDefault();
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            if (u === "RISHUUkitbot" && p === "chaos666") {
+            if (document.getElementById('username').value === "RISHUUkitbot" && document.getElementById('password').value === "chaos666") {
                 document.getElementById('auth-overlay').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
                 setTimeout(() => document.getElementById('main-content').classList.replace('opacity-0', 'opacity-100'), 50);
                 startApp();
-            } else {
-                document.getElementById('login-error').classList.remove('hidden');
             }
         };
 
@@ -172,13 +154,28 @@
                 if (!user) { signInAnonymously(auth); return; }
                 sessionReady = true;
 
-                // Status Monitor (Vitals, Inventory, Radar)
                 onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'vitals', 'status'), (s) => {
                     const data = s.data(); if (!data) return;
                     
-                    document.getElementById('hp').innerText = String(Math.round(data.health || 0)).padStart(2, '0');
-                    document.getElementById('fd').innerText = String(Math.round(data.food || 0)).padStart(2, '0');
+                    const baseHp = Math.round(data.health || 0);
+                    const absHp = Math.round(data.absorption || 0);
+                    const totalHp = baseHp + absHp;
+
+                    const hpEl = document.getElementById('hp');
+                    const absEl = document.getElementById('abs-val');
                     
+                    hpEl.innerText = String(totalHp).padStart(2, '0');
+                    
+                    if (absHp > 0) {
+                        hpEl.className = "text-4xl font-black italic text-yellow-500";
+                        absEl.innerText = `+${absHp}`;
+                        absEl.classList.remove('hidden');
+                    } else {
+                        hpEl.className = "text-4xl font-black italic text-white";
+                        absEl.classList.add('hidden');
+                    }
+
+                    document.getElementById('fd').innerText = String(Math.round(data.food || 0)).padStart(2, '0');
                     if (data.pos) {
                         document.getElementById('coord-x').innerText = (data.pos.x || 0);
                         document.getElementById('coord-y').innerText = (data.pos.y || 0);
@@ -186,39 +183,31 @@
                     }
                     
                     document.getElementById('last-update').innerText = new Date(data.lastUpdate).toLocaleTimeString('en-GB');
-                    
                     const online = data.status === 'online';
                     document.getElementById('status-dot').className = `w-1.5 h-1.5 rounded-full ${online ? 'bg-white pulse' : 'bg-zinc-800'}`;
                     document.getElementById('status-text').innerText = online ? 'Linked' : 'Standby';
 
-                    // Update Inventory
                     const invEl = document.getElementById('inventory-list');
-                    if (data.inventory && data.inventory.length > 0) {
+                    if (data.inventory) {
                         invEl.innerHTML = data.inventory.map(i => `
                             <div class="bg-zinc-900 p-2 border border-white/5 rounded-sm flex flex-col">
                                 <span class="text-[10px] font-black uppercase truncate">${i.name}</span>
                                 <span class="text-[9px] mono text-zinc-500">x${i.count}</span>
                             </div>
                         `).join('');
-                    } else {
-                        invEl.innerHTML = '<p class="text-[9px] text-zinc-800 italic col-span-2">Empty Bag</p>';
                     }
 
-                    // Update Radar
                     const radarEl = document.getElementById('radar-list');
-                    if (data.nearbyPlayers && data.nearbyPlayers.length > 0) {
+                    if (data.nearbyPlayers) {
                         radarEl.innerHTML = data.nearbyPlayers.map(p => `
                             <div class="bg-zinc-900/50 p-2 border-l-2 border-white/20 flex justify-between items-center">
                                 <span class="text-[10px] font-bold uppercase">${p.username}</span>
                                 <span class="mono text-[9px] text-zinc-500">${p.distance}m</span>
                             </div>
                         `).join('');
-                    } else {
-                        radarEl.innerHTML = '<p class="text-[9px] text-zinc-700 italic">No contacts detected.</p>';
                     }
                 });
 
-                // Chat Feed
                 onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'chat', 'logs'), (s) => {
                     const logs = s.data()?.messages || [];
                     const chatEl = document.getElementById('chat');
@@ -232,19 +221,7 @@
 
         window.sendRemote = async (text) => {
             if (!text.trim() || !sessionReady) return;
-            try {
-                await addDoc(collection(db, 'artifacts', dashboardId, 'public', 'data', 'commands'), { 
-                    text: text, 
-                    timestamp: serverTimestamp() 
-                });
-            } catch (err) { console.error(err); }
-        };
-
-        document.getElementById('cmd-form').onsubmit = (e) => {
-            e.preventDefault();
-            const input = document.getElementById('cmd-input');
-            sendRemote(input.value);
-            input.value = '';
+            try { await addDoc(collection(db, 'artifacts', dashboardId, 'public', 'data', 'commands'), { text, timestamp: serverTimestamp() }); } catch (err) {}
         };
     </script>
 </body>
