@@ -178,6 +178,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
         const dashboardId = "kitbot-a67aa";
 
         const loginForm = document.getElementById('login-form');
@@ -222,9 +223,6 @@
                 if (!user) {
                     signInAnonymously(auth).catch(err => {
                         console.error("Critical Auth Error:", err.code, err.message);
-                        if (err.code === 'auth/operation-not-allowed') {
-                            alert("FIREBASE ERROR: You must enable 'Anonymous' sign-in provider in your Firebase Console!");
-                        }
                     });
                     return;
                 }
@@ -237,8 +235,8 @@
                     setTimeout(() => mainContent.classList.replace('opacity-0', 'opacity-100'), 50);
                 }, 700);
 
-                // Status Monitor
-                onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'botStatus'), (s) => {
+                // Status Monitor (6 Segments)
+                onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'vitals', 'status'), (s) => {
                     const data = s.data();
                     if (!data) return;
                     
@@ -248,9 +246,9 @@
                     document.getElementById('fd-bar').style.width = ((data.food || 0)/20*100) + '%';
                     
                     if (data.pos) {
-                        document.getElementById('x').innerText = data.pos.x.toFixed(1);
-                        document.getElementById('y').innerText = data.pos.y.toFixed(1);
-                        document.getElementById('z').innerText = data.pos.z.toFixed(1);
+                        document.getElementById('x').innerText = (data.pos.x || 0).toFixed(1);
+                        document.getElementById('y').innerText = (data.pos.y || 0).toFixed(1);
+                        document.getElementById('z').innerText = (data.pos.z || 0).toFixed(1);
                     }
                     
                     const updateTime = data.lastUpdate ? new Date(data.lastUpdate).toLocaleTimeString('en-GB') : "--:--:--";
@@ -260,11 +258,11 @@
                     document.getElementById('status-dot').className = `w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-white pulse' : 'bg-zinc-800'}`;
                     document.getElementById('status-text').innerText = isOnline ? 'Linked' : 'Standby';
                 }, (err) => {
-                    console.error("Firestore Listen Error:", err);
+                    console.error("Vitals Listen Error:", err);
                 });
 
-                // Chat Feed
-                onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'chatLogs'), (s) => {
+                // Chat Feed (6 Segments)
+                onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'chat', 'logs'), (s) => {
                     const logs = s.data()?.messages || [];
                     const chatEl = document.getElementById('chat');
                     chatEl.innerHTML = logs.slice(-50).map(m => `
@@ -280,13 +278,9 @@
         }
 
         window.sendRemote = async (text) => {
-            if (!text.trim()) return;
-            if (!sessionReady) {
-                showToast("Link Not Ready");
-                return;
-            }
+            if (!text.trim() || !sessionReady) return;
             try {
-                const col = collection(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'outboundCommands');
+                const col = collection(db, 'artifacts', dashboardId, 'public', 'data', 'commands');
                 await addDoc(col, { 
                     text: text, 
                     timestamp: serverTimestamp() 
@@ -294,13 +288,7 @@
                 showToast(text.startsWith('#') ? "Power Signal Sent" : "Command Transmitted");
             } catch (err) {
                 console.error("Full Sync Error:", err);
-                // Check if it's a permission error
-                if (err.code === 'permission-denied') {
-                    showToast("Permission Denied");
-                    console.error("Check your Firestore Rules in Firebase Console!");
-                } else {
-                    showToast("Sync Failed");
-                }
+                showToast("Sync Failed");
             }
         };
 
