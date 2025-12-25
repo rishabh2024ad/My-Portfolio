@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KITBOT // CMD_CENTER</title>
+    <title>KITBOT // TACTICAL_CENTER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -20,27 +20,12 @@
         .glass { background: rgba(10, 10, 10, 0.9); border: 1px solid #1a1a1a; backdrop-filter: blur(12px); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #fff; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .pulse { animation: pulse 2s infinite; }
-        #auth-overlay { 
-            background: radial-gradient(circle at center, #111 0%, #000 100%); 
-            transition: opacity 0.5s ease;
-        }
-        #toast {
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        #auth-overlay { background: radial-gradient(circle at center, #111 0%, #000 100%); transition: opacity 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen">
-
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed top-6 right-6 z-[200] transform translate-x-full opacity-0 pointer-events-none">
-        <div class="glass px-6 py-3 border-l-4 border-l-white flex items-center gap-3">
-            <i class="fa-solid fa-satellite-dish text-xs pulse"></i>
-            <span id="toast-msg" class="text-[10px] font-black uppercase tracking-widest">Signal Transmitted</span>
-        </div>
-    </div>
 
     <!-- Auth Overlay -->
     <div id="auth-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
@@ -49,113 +34,99 @@
             <h2 class="text-3xl font-black italic uppercase mb-8 tracking-tighter">CMD_ACCESS</h2>
             
             <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mb-2">Operator ID</label>
-                    <input type="text" id="username" autocomplete="off" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono focus:outline-none focus:border-white/40 transition-all text-white">
-                </div>
-                <div>
-                    <label class="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mb-2">Access Key</label>
-                    <input type="password" id="password" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono focus:outline-none focus:border-white/40 transition-all text-white">
-                </div>
-                <div id="login-error" class="text-red-500 text-[10px] font-bold uppercase hidden">Access Denied: Invalid Credentials</div>
+                <input type="text" id="username" placeholder="OPERATOR ID" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono text-white focus:outline-none focus:border-white/40">
+                <input type="password" id="password" placeholder="ACCESS KEY" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono text-white focus:outline-none focus:border-white/40">
+                <div id="login-error" class="text-red-500 text-[10px] font-bold uppercase hidden text-center">Access Denied</div>
                 <button type="submit" class="w-full bg-white text-black font-black py-4 text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all mt-4">Initialize Link</button>
             </form>
-            <p class="mt-6 text-[8px] text-zinc-600 uppercase tracking-widest text-center">System v1.2.1 // Encrypted Connection</p>
         </div>
     </div>
 
-    <!-- Loading Screen -->
-    <div id="loader" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center transition-opacity duration-700 hidden">
-        <div class="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin mb-4"></div>
-        <p class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-50">Syncing Neurals</p>
-    </div>
-
-    <!-- Main Content -->
-    <div id="main-content" class="max-w-6xl mx-auto p-6 md:p-12 opacity-0 transition-opacity duration-1000 hidden">
+    <!-- Main Dashboard -->
+    <div id="main-content" class="max-w-7xl mx-auto p-6 md:p-12 hidden opacity-0 transition-opacity duration-1000">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-10 mb-10 gap-6">
             <div>
                 <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-2">Automated Kit Logistics</p>
-                <h1 class="text-6xl font-black tracking-tighter italic uppercase" id="bot-name">UOPP_KitBot</h1>
-                <div class="flex items-center gap-4 mt-4">
-                    <div class="flex items-center gap-2 px-3 py-1 bg-zinc-900 rounded-full border border-white/5">
-                        <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-zinc-800"></span>
-                        <span id="status-text" class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Connecting</span>
-                    </div>
+                <h1 class="text-6xl font-black tracking-tighter italic uppercase">UOPP_Tactical</h1>
+                <div class="flex items-center gap-2 mt-4 px-3 py-1 bg-zinc-900 rounded-full border border-white/5 w-fit">
+                    <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-zinc-800"></span>
+                    <span id="status-text" class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Connecting</span>
                 </div>
             </div>
             <div class="text-right">
-                <p class="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">System Heartbeat</p>
+                <p class="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Heartbeat</p>
                 <p id="last-update" class="mono text-xl">--:--:--</p>
             </div>
         </header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-7 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass p-8 rounded-sm">
-                        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">Vitality</p>
-                        <div class="flex items-baseline gap-2">
-                            <span id="hp" class="text-7xl font-black tracking-tighter">00</span>
-                            <span class="text-zinc-700 text-xl italic">/ 20</span>
-                        </div>
-                        <div class="mt-6 bg-zinc-900 h-0.5 w-full"><div id="hp-bar" class="bg-white h-full transition-all duration-700" style="width: 0%"></div></div>
-                    </div>
-                    <div class="glass p-8 rounded-sm">
-                        <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">Sustenance</p>
-                        <div class="flex items-baseline gap-2">
-                            <span id="fd" class="text-7xl font-black tracking-tighter">00</span>
-                            <span class="text-zinc-700 text-xl italic">/ 20</span>
-                        </div>
-                        <div class="mt-6 bg-zinc-900 h-0.5 w-full"><div id="fd-bar" class="bg-white h-full transition-all duration-700" style="width: 0%"></div></div>
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Panel: Vitals & Radar -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass p-6 rounded-sm">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Nearby Contacts</p>
+                    <div id="radar-list" class="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
+                        <p class="text-[10px] text-zinc-700 italic">No contacts in vicinity...</p>
                     </div>
                 </div>
 
-                <div class="glass p-8 rounded-sm">
-                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8">Spatial Telemetry</p>
+                <div class="glass p-6 rounded-sm">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Bot Vitals</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[9px] text-zinc-500 mb-1">HEALTH</p>
+                            <p id="hp" class="text-4xl font-black italic">00</p>
+                        </div>
+                        <div>
+                            <p class="text-[9px] text-zinc-500 mb-1">HUNGER</p>
+                            <p id="fd" class="text-4xl font-black italic">00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-sm">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Spatial Telemetry</p>
                     <div class="grid grid-cols-3 gap-4">
-                        <div><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_X</p><p id="x" class="mono text-2xl font-bold tracking-tight">0.0</p></div>
-                        <div class="border-l border-white/5 pl-4"><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_Y</p><p id="y" class="mono text-2xl font-bold tracking-tight">0.0</p></div>
-                        <div class="border-l border-white/5 pl-4"><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_Z</p><p id="z" class="mono text-2xl font-bold tracking-tight">0.0</p></div>
+                        <div><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_X</p><p id="coord-x" class="mono text-xl font-bold tracking-tight">0.0</p></div>
+                        <div class="border-l border-white/5 pl-4"><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_Y</p><p id="coord-y" class="mono text-xl font-bold tracking-tight">0.0</p></div>
+                        <div class="border-l border-white/5 pl-4"><p class="text-[9px] font-bold text-zinc-700 uppercase mb-1">Axis_Z</p><p id="coord-z" class="mono text-xl font-bold tracking-tight">0.0</p></div>
                     </div>
                 </div>
+            </div>
 
-                <div class="glass rounded-sm flex flex-col h-[400px]">
-                    <div class="p-4 border-b border-white/5 flex justify-between items-center bg-zinc-900/20">
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Transmission_Buffer</span>
-                        <div class="w-1.5 h-1.5 rounded-full bg-white pulse" id="chat-indicator"></div>
+            <!-- Center Panel: Chat & Console -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass h-[450px] flex flex-col rounded-sm">
+                    <div class="p-4 border-b border-white/5 bg-zinc-900/20 flex justify-between items-center">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Tactical_Feed</span>
                     </div>
-                    <div id="chat" class="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar mono text-[11px] text-zinc-400">
-                        <p class="italic opacity-20">Awaiting stream data...</p>
-                    </div>
+                    <div id="chat" class="flex-1 overflow-y-auto p-6 space-y-2 custom-scrollbar mono text-[11px] text-zinc-400"></div>
                     <div class="p-4 bg-black border-t border-white/5">
                         <form id="cmd-form" class="flex gap-2">
-                            <input type="text" id="cmd-input" placeholder="Execute remote command..." class="flex-1 bg-zinc-900 border border-white/5 rounded-sm px-4 py-2 text-[11px] mono focus:outline-none focus:border-white/40 transition-all">
-                            <button type="submit" class="bg-white text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all">Send</button>
+                            <input type="text" id="cmd-input" placeholder="Dispatch command..." class="flex-1 bg-zinc-900 border border-white/5 rounded-sm px-4 py-2 text-[11px] mono focus:outline-none focus:border-white/40">
+                            <button type="submit" class="bg-white text-black px-4 py-2 text-[10px] font-black uppercase">Send</button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 space-y-4">
-                <div class="glass p-8 rounded-sm">
-                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8">Power Management</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="sendRemote('#DISCONNECT')" class="bg-red-900/20 border border-red-500/20 hover:bg-red-600 hover:text-white text-red-500 p-4 text-[9px] font-black uppercase tracking-widest transition-all text-center">Kill Connection</button>
-                        <button onclick="sendRemote('#RECONNECT')" class="bg-green-900/20 border border-green-500/20 hover:bg-green-600 hover:text-white text-green-500 p-4 text-[9px] font-black uppercase tracking-widest transition-all text-center">Re-Initialize</button>
+            <!-- Right Panel: Inventory & Controls -->
+            <div class="lg:col-span-3 space-y-6">
+                <div class="glass p-6 rounded-sm">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-6">Live Inventory</p>
+                    <div id="inventory-list" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                        <div class="bg-zinc-900 p-2 border border-white/5 rounded-sm">
+                            <p class="text-[8px] text-zinc-600 mb-1">EMPTY</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="glass p-8 rounded-sm">
-                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8">Standard Procedures</h3>
+                <div class="glass p-6 bg-white text-black rounded-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-4 italic">Power Operations</p>
                     <div class="grid grid-cols-1 gap-2">
-                        <button onclick="sendRemote('/home main')" class="w-full bg-zinc-900 border border-white/5 hover:bg-white hover:text-black p-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all text-left flex justify-between items-center">Relocate Main <i class="fa-solid fa-arrow-right text-[8px]"></i></button>
-                        <button onclick="sendRemote(')kit pvp')" class="w-full bg-zinc-900 border border-white/5 hover:bg-white hover:text-black p-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all text-left flex justify-between items-center">Dispatch Kit <i class="fa-solid fa-box text-[8px]"></i></button>
+                        <button onclick="sendRemote('#DISCONNECT')" class="w-full bg-black text-white p-3 text-[10px] font-black uppercase hover:bg-zinc-800 transition-all">STANDBY</button>
+                        <button onclick="sendRemote('#RECONNECT')" class="w-full border-2 border-black p-3 text-[10px] font-black uppercase hover:bg-black hover:text-white transition-all">REBOOT</button>
                     </div>
-                </div>
-
-                <div class="glass p-6 rounded-sm bg-white text-black">
-                    <p class="text-[10px] font-black uppercase tracking-widest mb-2 italic">Infrastructure Note</p>
-                    <p class="text-[11px] leading-relaxed font-medium">Power cycle takes ~10s. Do not spam initialization.</p>
                 </div>
             </div>
         </main>
@@ -178,99 +149,81 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
         const dashboardId = "kitbot-a67aa";
 
-        const loginForm = document.getElementById('login-form');
-        const authOverlay = document.getElementById('auth-overlay');
-        const mainContent = document.getElementById('main-content');
-        const loader = document.getElementById('loader');
-        
         let sessionReady = false;
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            toast.classList.replace('opacity-0', 'opacity-100');
-            toast.classList.replace('translate-x-full', 'translate-x-0');
-            setTimeout(() => {
-                toast.classList.replace('opacity-100', 'opacity-0');
-                toast.classList.replace('translate-x-0', 'translate-x-full');
-            }, 3000);
-        }
-
-        loginForm.onsubmit = (e) => {
+        document.getElementById('login-form').onsubmit = (e) => {
             e.preventDefault();
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-
             if (u === "RISHUUkitbot" && p === "chaos666") {
-                authOverlay.classList.add('opacity-0');
-                setTimeout(() => {
-                    authOverlay.classList.add('hidden');
-                    loader.classList.remove('hidden');
-                    startApp();
-                }, 500);
+                document.getElementById('auth-overlay').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                setTimeout(() => document.getElementById('main-content').classList.replace('opacity-0', 'opacity-100'), 50);
+                startApp();
             } else {
-                const error = document.getElementById('login-error');
-                error.classList.remove('hidden');
-                setTimeout(() => error.classList.add('hidden'), 3000);
+                document.getElementById('login-error').classList.remove('hidden');
             }
         };
 
         function startApp() {
             onAuthStateChanged(auth, (user) => {
-                if (!user) {
-                    signInAnonymously(auth).catch(err => {
-                        console.error("Critical Auth Error:", err.code, err.message);
-                    });
-                    return;
-                }
-
+                if (!user) { signInAnonymously(auth); return; }
                 sessionReady = true;
-                loader.classList.add('opacity-0');
-                setTimeout(() => {
-                    loader.classList.add('hidden');
-                    mainContent.classList.remove('hidden');
-                    setTimeout(() => mainContent.classList.replace('opacity-0', 'opacity-100'), 50);
-                }, 700);
 
-                // Status Monitor (6 Segments)
+                // Status Monitor (Vitals, Inventory, Radar)
                 onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'vitals', 'status'), (s) => {
-                    const data = s.data();
-                    if (!data) return;
+                    const data = s.data(); if (!data) return;
                     
                     document.getElementById('hp').innerText = String(Math.round(data.health || 0)).padStart(2, '0');
-                    document.getElementById('hp-bar').style.width = ((data.health || 0)/20*100) + '%';
                     document.getElementById('fd').innerText = String(Math.round(data.food || 0)).padStart(2, '0');
-                    document.getElementById('fd-bar').style.width = ((data.food || 0)/20*100) + '%';
                     
                     if (data.pos) {
-                        document.getElementById('x').innerText = (data.pos.x || 0).toFixed(1);
-                        document.getElementById('y').innerText = (data.pos.y || 0).toFixed(1);
-                        document.getElementById('z').innerText = (data.pos.z || 0).toFixed(1);
+                        document.getElementById('coord-x').innerText = (data.pos.x || 0);
+                        document.getElementById('coord-y').innerText = (data.pos.y || 0);
+                        document.getElementById('coord-z').innerText = (data.pos.z || 0);
                     }
                     
-                    const updateTime = data.lastUpdate ? new Date(data.lastUpdate).toLocaleTimeString('en-GB') : "--:--:--";
-                    document.getElementById('last-update').innerText = updateTime;
+                    document.getElementById('last-update').innerText = new Date(data.lastUpdate).toLocaleTimeString('en-GB');
                     
-                    const isOnline = data.status === 'online';
-                    document.getElementById('status-dot').className = `w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-white pulse' : 'bg-zinc-800'}`;
-                    document.getElementById('status-text').innerText = isOnline ? 'Linked' : 'Standby';
-                }, (err) => {
-                    console.error("Vitals Listen Error:", err);
+                    const online = data.status === 'online';
+                    document.getElementById('status-dot').className = `w-1.5 h-1.5 rounded-full ${online ? 'bg-white pulse' : 'bg-zinc-800'}`;
+                    document.getElementById('status-text').innerText = online ? 'Linked' : 'Standby';
+
+                    // Update Inventory
+                    const invEl = document.getElementById('inventory-list');
+                    if (data.inventory && data.inventory.length > 0) {
+                        invEl.innerHTML = data.inventory.map(i => `
+                            <div class="bg-zinc-900 p-2 border border-white/5 rounded-sm flex flex-col">
+                                <span class="text-[10px] font-black uppercase truncate">${i.name}</span>
+                                <span class="text-[9px] mono text-zinc-500">x${i.count}</span>
+                            </div>
+                        `).join('');
+                    } else {
+                        invEl.innerHTML = '<p class="text-[9px] text-zinc-800 italic col-span-2">Empty Bag</p>';
+                    }
+
+                    // Update Radar
+                    const radarEl = document.getElementById('radar-list');
+                    if (data.nearbyPlayers && data.nearbyPlayers.length > 0) {
+                        radarEl.innerHTML = data.nearbyPlayers.map(p => `
+                            <div class="bg-zinc-900/50 p-2 border-l-2 border-white/20 flex justify-between items-center">
+                                <span class="text-[10px] font-bold uppercase">${p.username}</span>
+                                <span class="mono text-[9px] text-zinc-500">${p.distance}m</span>
+                            </div>
+                        `).join('');
+                    } else {
+                        radarEl.innerHTML = '<p class="text-[9px] text-zinc-700 italic">No contacts detected.</p>';
+                    }
                 });
 
-                // Chat Feed (6 Segments)
+                // Chat Feed
                 onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'chat', 'logs'), (s) => {
                     const logs = s.data()?.messages || [];
                     const chatEl = document.getElementById('chat');
                     chatEl.innerHTML = logs.slice(-50).map(m => `
-                        <div class="py-1 border-b border-white/5">
-                            <span class="text-zinc-600 text-[9px] mr-2">[${m.time}]</span>
-                            <span class="text-zinc-300 font-bold mr-1">${m.user}:</span>
-                            <span>${m.text}</span>
-                        </div>
+                        <div class="py-1 border-b border-white/5"><span class="text-zinc-600 text-[9px] mr-2">[${m.time}]</span><span class="text-zinc-300 font-bold mr-1">${m.user}:</span><span>${m.text}</span></div>
                     `).join('');
                     chatEl.scrollTop = chatEl.scrollHeight;
                 });
@@ -280,16 +233,11 @@
         window.sendRemote = async (text) => {
             if (!text.trim() || !sessionReady) return;
             try {
-                const col = collection(db, 'artifacts', dashboardId, 'public', 'data', 'commands');
-                await addDoc(col, { 
+                await addDoc(collection(db, 'artifacts', dashboardId, 'public', 'data', 'commands'), { 
                     text: text, 
                     timestamp: serverTimestamp() 
                 });
-                showToast(text.startsWith('#') ? "Power Signal Sent" : "Command Transmitted");
-            } catch (err) {
-                console.error("Full Sync Error:", err);
-                showToast("Sync Failed");
-            }
+            } catch (err) { console.error(err); }
         };
 
         document.getElementById('cmd-form').onsubmit = (e) => {
