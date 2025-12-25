@@ -8,49 +8,70 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; letter-spacing: -0.02em; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #000; 
+            color: #fff; 
+            letter-spacing: -0.02em; 
+            margin: 0;
+            overflow-x: hidden;
+        }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(10, 10, 10, 0.8); border: 1px solid #1a1a1a; backdrop-filter: blur(10px); }
+        .glass { background: rgba(10, 10, 10, 0.9); border: 1px solid #1a1a1a; backdrop-filter: blur(12px); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #fff; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .pulse { animation: pulse 2s infinite; }
-        
-        /* Auth Overlay Styles */
-        #auth-overlay {
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        #auth-overlay { 
+            background: radial-gradient(circle at center, #111 0%, #000 100%); 
+            transition: opacity 0.5s ease;
+        }
+        #toast {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
         }
     </style>
 </head>
-<body class="min-h-screen p-6 md:p-12">
+<body class="min-h-screen">
 
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-6 right-6 z-[200] transform translate-x-full opacity-0 pointer-events-none">
+        <div class="glass px-6 py-3 border-l-4 border-l-white flex items-center gap-3">
+            <i class="fa-solid fa-satellite-dish text-xs pulse"></i>
+            <span id="toast-msg" class="text-[10px] font-black uppercase tracking-widest">Signal Transmitted</span>
+        </div>
+    </div>
+
+    <!-- Auth Overlay -->
     <div id="auth-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
-        <div class="glass p-8 w-full max-w-md rounded-sm border-t-4 border-t-white">
+        <div class="glass p-8 w-full max-w-md rounded-sm border-t-4 border-t-white shadow-2xl">
             <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.4em] mb-2">Security Protocol</p>
-            <h2 class="text-3xl font-black italic uppercase mb-8 italic tracking-tighter">CMD_ACCESS</h2>
+            <h2 class="text-3xl font-black italic uppercase mb-8 tracking-tighter">CMD_ACCESS</h2>
             
             <form id="login-form" class="space-y-4">
                 <div>
                     <label class="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mb-2">Operator ID</label>
-                    <input type="text" id="username" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono focus:outline-none focus:border-white/40 transition-all">
+                    <input type="text" id="username" autocomplete="off" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono focus:outline-none focus:border-white/40 transition-all text-white">
                 </div>
                 <div>
                     <label class="text-[9px] uppercase tracking-widest text-zinc-500 font-bold block mb-2">Access Key</label>
-                    <input type="password" id="password" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono focus:outline-none focus:border-white/40 transition-all">
+                    <input type="password" id="password" required class="w-full bg-zinc-900 border border-white/10 rounded-sm px-4 py-3 text-sm mono focus:outline-none focus:border-white/40 transition-all text-white">
                 </div>
                 <div id="login-error" class="text-red-500 text-[10px] font-bold uppercase hidden">Access Denied: Invalid Credentials</div>
                 <button type="submit" class="w-full bg-white text-black font-black py-4 text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all mt-4">Initialize Link</button>
             </form>
+            <p class="mt-6 text-[8px] text-zinc-600 uppercase tracking-widest text-center">System v1.2.1 // Encrypted Connection</p>
         </div>
     </div>
 
+    <!-- Loading Screen -->
     <div id="loader" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center transition-opacity duration-700 hidden">
         <div class="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin mb-4"></div>
         <p class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-50">Syncing Neurals</p>
     </div>
 
-    <div id="main-content" class="max-w-6xl mx-auto opacity-0 transition-opacity duration-1000">
+    <!-- Main Content -->
+    <div id="main-content" class="max-w-6xl mx-auto p-6 md:p-12 opacity-0 transition-opacity duration-1000 hidden">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-10 mb-10 gap-6">
             <div>
                 <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.3em] mb-2">Automated Kit Logistics</p>
@@ -98,7 +119,7 @@
                     </div>
                 </div>
 
-                <div class="glass rounded-sm flex flex-col h-[500px]">
+                <div class="glass rounded-sm flex flex-col h-[400px]">
                     <div class="p-4 border-b border-white/5 flex justify-between items-center bg-zinc-900/20">
                         <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Transmission_Buffer</span>
                         <div class="w-1.5 h-1.5 rounded-full bg-white pulse" id="chat-indicator"></div>
@@ -109,7 +130,7 @@
                     <div class="p-4 bg-black border-t border-white/5">
                         <form id="cmd-form" class="flex gap-2">
                             <input type="text" id="cmd-input" placeholder="Execute remote command..." class="flex-1 bg-zinc-900 border border-white/5 rounded-sm px-4 py-2 text-[11px] mono focus:outline-none focus:border-white/40 transition-all">
-                            <button class="bg-white text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all">Send</button>
+                            <button type="submit" class="bg-white text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all">Send</button>
                         </form>
                     </div>
                 </div>
@@ -117,19 +138,24 @@
 
             <div class="lg:col-span-5 space-y-4">
                 <div class="glass p-8 rounded-sm">
-                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8">Node Diagnostics</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center"><span class="text-xs text-zinc-500">Authentication</span><span id="diag-auth" class="text-[9px] font-bold border border-white/10 px-2 py-1 uppercase opacity-30">Idle</span></div>
-                        <div class="flex justify-between items-center"><span class="text-xs text-zinc-500">Database Link</span><span id="diag-db" class="text-[9px] font-bold border border-white/10 px-2 py-1 uppercase opacity-30">Pending</span></div>
+                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8">Power Management</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="sendRemote('#DISCONNECT')" class="bg-red-900/20 border border-red-500/20 hover:bg-red-600 hover:text-white text-red-500 p-4 text-[9px] font-black uppercase tracking-widest transition-all text-center">Kill Connection</button>
+                        <button onclick="sendRemote('#RECONNECT')" class="bg-green-900/20 border border-green-500/20 hover:bg-green-600 hover:text-white text-green-500 p-4 text-[9px] font-black uppercase tracking-widest transition-all text-center">Re-Initialize</button>
                     </div>
                 </div>
+
+                <div class="glass p-8 rounded-sm">
+                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-8">Standard Procedures</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        <button onclick="sendRemote('/home main')" class="w-full bg-zinc-900 border border-white/5 hover:bg-white hover:text-black p-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all text-left flex justify-between items-center">Relocate Main <i class="fa-solid fa-arrow-right text-[8px]"></i></button>
+                        <button onclick="sendRemote(')kit pvp')" class="w-full bg-zinc-900 border border-white/5 hover:bg-white hover:text-black p-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all text-left flex justify-between items-center">Dispatch Kit <i class="fa-solid fa-box text-[8px]"></i></button>
+                    </div>
+                </div>
+
                 <div class="glass p-6 rounded-sm bg-white text-black">
                     <p class="text-[10px] font-black uppercase tracking-widest mb-2 italic">Infrastructure Note</p>
-                    <p class="text-[11px] leading-relaxed font-medium">Session persists via project <b>kitbot-a67aa</b>. Data syncs across 6-segment clusters.</p>
-                </div>
-                <div class="grid grid-cols-1 gap-2">
-                    <button onclick="sendRemote('/home main')" class="w-full bg-zinc-900 border border-white/5 hover:bg-white hover:text-black p-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all text-left flex justify-between items-center">Relocate Main <i class="fa-solid fa-arrow-right text-[8px]"></i></button>
-                    <button onclick="sendRemote(')kit pvp')" class="w-full bg-zinc-900 border border-white/5 hover:bg-white hover:text-black p-4 text-[10px] font-bold uppercase tracking-[0.2em] transition-all text-left flex justify-between items-center">Dispatch Kit <i class="fa-solid fa-box text-[8px]"></i></button>
+                    <p class="text-[11px] leading-relaxed font-medium">Power cycle takes ~10s. Do not spam initialization.</p>
                 </div>
             </div>
         </main>
@@ -152,23 +178,38 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const dashboardId = "kit-bot-default";
+        const dashboardId = "kitbot-a67aa";
 
-        // Login Logic
         const loginForm = document.getElementById('login-form');
         const authOverlay = document.getElementById('auth-overlay');
         const mainContent = document.getElementById('main-content');
         const loader = document.getElementById('loader');
+        
+        let sessionReady = false;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.replace('opacity-0', 'opacity-100');
+            toast.classList.replace('translate-x-full', 'translate-x-0');
+            setTimeout(() => {
+                toast.classList.replace('opacity-100', 'opacity-0');
+                toast.classList.replace('translate-x-0', 'translate-x-full');
+            }, 3000);
+        }
 
         loginForm.onsubmit = (e) => {
             e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
 
-            if (user === "RISHUUkitbot" && pass === "chaos666") {
-                authOverlay.classList.add('hidden');
-                loader.classList.remove('hidden');
-                startApp();
+            if (u === "RISHUUkitbot" && p === "chaos666") {
+                authOverlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    authOverlay.classList.add('hidden');
+                    loader.classList.remove('hidden');
+                    startApp();
+                }, 500);
             } else {
                 const error = document.getElementById('login-error');
                 error.classList.remove('hidden');
@@ -178,57 +219,89 @@
 
         function startApp() {
             onAuthStateChanged(auth, (user) => {
-                if (!user) return signInAnonymously(auth);
-                
-                // Hide Loader
+                if (!user) {
+                    signInAnonymously(auth).catch(err => {
+                        console.error("Critical Auth Error:", err.code, err.message);
+                        if (err.code === 'auth/operation-not-allowed') {
+                            alert("FIREBASE ERROR: You must enable 'Anonymous' sign-in provider in your Firebase Console!");
+                        }
+                    });
+                    return;
+                }
+
+                sessionReady = true;
                 loader.classList.add('opacity-0');
                 setTimeout(() => {
                     loader.classList.add('hidden');
-                    mainContent.classList.replace('opacity-0', 'opacity-100');
+                    mainContent.classList.remove('hidden');
+                    setTimeout(() => mainContent.classList.replace('opacity-0', 'opacity-100'), 50);
                 }, 700);
 
-                document.getElementById('diag-auth').innerText = "ONLINE";
-                document.getElementById('diag-auth').classList.replace('opacity-30', 'text-white');
-
-                // Initialize Listeners
+                // Status Monitor
                 onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'botStatus'), (s) => {
                     const data = s.data();
                     if (!data) return;
-                    document.getElementById('diag-db').innerText = "CONNECTED";
-                    document.getElementById('diag-db').classList.replace('opacity-30', 'text-white');
-                    document.getElementById('hp').innerText = String(Math.round(data.health)).padStart(2, '0');
-                    document.getElementById('hp-bar').style.width = (data.health/20*100) + '%';
-                    document.getElementById('fd').innerText = String(data.food).padStart(2, '0');
-                    document.getElementById('fd-bar').style.width = (data.food/20*100) + '%';
-                    document.getElementById('x').innerText = data.pos.x.toFixed(1);
-                    document.getElementById('y').innerText = data.pos.y.toFixed(1);
-                    document.getElementById('z').innerText = data.pos.z.toFixed(1);
-                    document.getElementById('bot-name').innerText = data.username;
-                    document.getElementById('last-update').innerText = new Date(data.lastUpdate).toLocaleTimeString('en-GB');
+                    
+                    document.getElementById('hp').innerText = String(Math.round(data.health || 0)).padStart(2, '0');
+                    document.getElementById('hp-bar').style.width = ((data.health || 0)/20*100) + '%';
+                    document.getElementById('fd').innerText = String(Math.round(data.food || 0)).padStart(2, '0');
+                    document.getElementById('fd-bar').style.width = ((data.food || 0)/20*100) + '%';
+                    
+                    if (data.pos) {
+                        document.getElementById('x').innerText = data.pos.x.toFixed(1);
+                        document.getElementById('y').innerText = data.pos.y.toFixed(1);
+                        document.getElementById('z').innerText = data.pos.z.toFixed(1);
+                    }
+                    
+                    const updateTime = data.lastUpdate ? new Date(data.lastUpdate).toLocaleTimeString('en-GB') : "--:--:--";
+                    document.getElementById('last-update').innerText = updateTime;
+                    
                     const isOnline = data.status === 'online';
                     document.getElementById('status-dot').className = `w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-white pulse' : 'bg-zinc-800'}`;
                     document.getElementById('status-text').innerText = isOnline ? 'Linked' : 'Standby';
+                }, (err) => {
+                    console.error("Firestore Listen Error:", err);
                 });
 
+                // Chat Feed
                 onSnapshot(doc(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'chatLogs'), (s) => {
                     const logs = s.data()?.messages || [];
-                    document.getElementById('chat').innerHTML = logs.slice(-50).map(m => `
+                    const chatEl = document.getElementById('chat');
+                    chatEl.innerHTML = logs.slice(-50).map(m => `
                         <div class="py-1 border-b border-white/5">
                             <span class="text-zinc-600 text-[9px] mr-2">[${m.time}]</span>
                             <span class="text-zinc-300 font-bold mr-1">${m.user}:</span>
                             <span>${m.text}</span>
                         </div>
                     `).join('');
-                    const chat = document.getElementById('chat');
-                    chat.scrollTop = chat.scrollHeight;
+                    chatEl.scrollTop = chatEl.scrollHeight;
                 });
             });
         }
 
         window.sendRemote = async (text) => {
             if (!text.trim()) return;
-            const col = collection(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'outboundCommands');
-            await addDoc(col, { text, timestamp: serverTimestamp() });
+            if (!sessionReady) {
+                showToast("Link Not Ready");
+                return;
+            }
+            try {
+                const col = collection(db, 'artifacts', dashboardId, 'public', 'data', 'liveData', 'outboundCommands');
+                await addDoc(col, { 
+                    text: text, 
+                    timestamp: serverTimestamp() 
+                });
+                showToast(text.startsWith('#') ? "Power Signal Sent" : "Command Transmitted");
+            } catch (err) {
+                console.error("Full Sync Error:", err);
+                // Check if it's a permission error
+                if (err.code === 'permission-denied') {
+                    showToast("Permission Denied");
+                    console.error("Check your Firestore Rules in Firebase Console!");
+                } else {
+                    showToast("Sync Failed");
+                }
+            }
         };
 
         document.getElementById('cmd-form').onsubmit = (e) => {
